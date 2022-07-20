@@ -1,3 +1,3 @@
-const {something} = require('');
+const { User, Thought } = require('./User');
 
-module.exports = { something something }
+// module.exports = { User, Thought };
