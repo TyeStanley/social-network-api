@@ -15,7 +15,7 @@ const thoughtController = {
 
   // GET thoughts by id
   getThoughtById(req, res) {
-    Thought.findOne({ _id: req.params.id })
+    Thought.findOne({ _id: req.params.id})
       .populate({
         path: 'user',
         select: '-__v'
@@ -33,8 +33,6 @@ const thoughtController = {
         res.status(400).json(err);
       });
   },
-
-
 
   // getThoughtById(req, res) {
   //   console.log(req.params.id);
