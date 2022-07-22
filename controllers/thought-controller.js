@@ -15,11 +15,7 @@ const thoughtController = {
 
   // GET thoughts by id
   getThoughtById(req, res) {
-    Thought.findOne({ _id: req.params.id})
-      .populate({
-        path: 'user',
-        select: '-__v'
-      })
+    Thought.findOne({ _id: req.params.id })
       .select('-__v')
       .then(dbThoughtData => {
         if (!dbThoughtData) {
@@ -34,54 +30,32 @@ const thoughtController = {
       });
   },
 
-  // getThoughtById(req, res) {
-  //   console.log(req.params.id);
-  //   Thought.findOne({ _id: req.params.id})
-  //     .then(dbData => {
-  //       console.log(dbData);
-  //       res.json(dbData);
-  //     })
-  //     .catch(err => res.status(400).json(err));
-  // },
-
-
-  // getThoughtById(req, res) {
-  //   Thought.findOne({ _id: req.params.id })
-  //     .then(dbThoughtData => {
-  //       console.log(dbThoughtData);
-  //       res.json(dbThoughtData)
-  //     })
-  //     .catch(err => {
-  //       console.log(err);
-  //       res.status(400).json(err);
-  //     });
-  // },
-
   // POST a new thought and adds thought to USER 
-  createThought(req, res) {
-    Thought.create(req.body)
+  createThought({ body }, res) {
+    Thought.create(body)
       .then(dbThoughtData => {
-        User.findOneAndUpdate(
-          { _id: req.body.userId },
-          { $push: { thoughts: dbThoughtData.id  } },
+        return User.findOneAndUpdate(
+          { _id: body.userId },
+          { $push: { thoughts: dbThoughtData._id } },
           { new: true }
         );
-        console.log(`${body.username}, you have successfully created a new thought!`)
       })
-        .then(dbThoughtData => res.json(dbThoughtData))
-        .catch(err => res.status(400).json(err));
+        .then(dbThoughtData => {
+          res.json(dbThoughtData);
+        })
+        .catch(err => res.json(err));
   },
 
   // UPDATE a thought
   updateThought({ params, body }, res) {
     Thought.findOneAndUpdate({ _id: params.id }, body, { new: true })
+      .select('-__v')
       .then(dbThoughtData => res.json(dbThoughtData))
       .catch(err => res.status(400).json(err));
   },
 
   // Delete a Thought
   deleteThought({ params }, res) {
-    console.log(params);
     Thought.findOneAndDelete({ _id: params.id })
       .then(deletedThought => {
         if (!deletedThought) {
